@@ -24,8 +24,8 @@ app.get('/src/source.js', function(req, res){
   res.sendfile(__dirname + '/src/source.js');
 })
 
-app.get('/lib/d3.v3.min.js', function(req, res){
-  res.sendfile(__dirname + '/lib/d3.v3.min.js');
+app.get('/lib/d3.js', function(req, res){
+  res.sendfile(__dirname + '/lib/d3.js');
 })
 
 app.get('/lib/jquery.js', function(req, res){

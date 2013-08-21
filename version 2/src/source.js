@@ -1,61 +1,12 @@
 console.log("hello world!");
 
-//D3 stuff!
-
-// var w = 960,
-//     h = 500,
-//     fill = d3.scale.category10(),
-//     nodes = [],
-//     foci = {
-//       username: [location, 'messages']
-//     };
-
-// var vis = d3.select("body").append("svg:svg")
-//     .attr("width", w)
-//     .attr("height", h);
-
-// var force = d3.layout.force()
-//     .nodes(nodes)
-//     .links([])
-//     .gravity(0)
-//     .size([w, h]);
-
-// force.on("tick", function(e) {
-
-//   // Push nodes toward their designated focus.
-//   var k = .1 * e.alpha;
-//   nodes.forEach(function(item, index) {
-//     item.y += (foci[item.id].y - item.y) * k;
-//     item.x += (foci[item.id].x - item.x) * k;
-//   });
-
-//   vis.selectAll("circle.node")
-//       .attr("cx", function(d) { return d.x; })
-//       .attr("cy", function(d) { return d.y; });
-// });
-
-// var inputMessageNode = function(username, message, time){
-//   nodes.push({id: ~~(Math.random() * foci.length)});
-//   force.start();
-
-//   vis.selectAll("circle.node")
-//       .data(nodes)
-//     .enter().append("svg:circle")
-//       .attr("class", "node")
-//       .attr("cx", function(d) { return d.x; })
-//       .attr("cy", function(d) { return d.y; })
-//       .attr("r", 8)
-//       .style("fill", function(d) { return fill(d.id); })
-//       .style("stroke", function(d) { return d3.rgb(fill(d.id)).darker(2); })
-//       .style("stroke-width", 1.5)
-//       .call(force.drag);
-// }, 1000);
-
-
-
 //Socket stuff!
 
-var socket = io.connect('http://localhost:8080');
+//jquery/D3 stuff!
+
+$(document).ready(function(){
+
+var socket = io.connect('10.1.1.14:8080');
 
 var username;
 
@@ -83,12 +34,36 @@ socket.on('news', function (data) {
   socket.emit('my other event', { my: 'data' });
 });
 
+    $('.submitter').on('click', function(){
+      var data = $('.message').val();
+      $('.message').val("");
+      socket.emit('sendchat', data);
+    });
+    $('.message').keypress(function(e){
+      if(e.which === 13) {
+        $('.submitter').click();
+      }
+    })
+
+    var height = 500;
+    var width = 700;
+
+    var svg = d3.select('body').append('svg:svg')
+      .attr('width', width)
+      .attr('height', height)
+
+
+
+
+
 
 //backbone stuff!
 
 var Friends = Backbone.Model.extend({});
 
 var friendList = new Friends();
+
+var messageList = {};
 
 var User = Backbone.Model.extend({
   initialize: function(user) {
@@ -125,14 +100,39 @@ var Post = Backbone.Model.extend({
     this.set('username', obj.username);
     this.set('message', obj.message);
     this.set('createdAt', obj.timeRecieved);
+    if (messageList[obj.username] === undefined) {
+      messageList[obj.username] = [[obj.message, obj.timeRecieved]];
+    } else {
+      messageList[obj.username].push([obj.message, obj.timeRecieved]);
+    }
   }
 })
+
 
 var PostView = Backbone.View.extend({
   render: function(){
     var username2 = this.model.get('username');
     var friend = !!friendList.get(username2);
     var html = '<div class=' + friend.toString() + '>' + username2.toString() + ': ' + this.model.get('message').toString() + '</div>';
+    var messages = svg.selectAll('circle.' + username2)
+      .data(messageList[username2])
+      .enter().append('svg:circle')
+      .attr('class', username2)
+      .attr('cx', width*Math.random())
+      .attr('cy', height*Math.random())
+      .attr('r', 8)
+      .style('fill', 'blue')
+      .on('mouseover', function(d){
+        var circle = d3.select(this);
+        circle.transition().attr('r', 100);
+        circle.append('svg:text').text(d[0]);
+        console.log(d[0]);
+      })
+      .on('mouseout', function(d){
+        var circle = d3.select(this);
+        circle.empty();
+        circle.transition().attr('r', 8);
+      });
     return this.$el.html(html);
   },
   initialize: function(){
@@ -145,15 +145,6 @@ var PostView = Backbone.View.extend({
   }
 });
 
-$(document).ready(function(){
-    $('.submitter').on('click', function(){
-      var data = $('.message').val();
-      $('.message').val("");
-      socket.emit('sendchat', data);
-    });
-    $('.message').keypress(function(e){
-      if(e.which === 13) {
-        $('.submitter').click();
-      }
-    })
+
+
 })
