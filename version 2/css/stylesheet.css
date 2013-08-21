@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+}
+
+body {
+  font-family: helvetica;
+  font-size: 14px;
+}
+
+.users {
+  float: right;
+  height: 200px;
+  width: 70px;
+  border-left: solid grey 1px;
+  border-bottom: solid grey 1px;
+}
+
+.user {
+  list-style-type: none;
+}
+
+ul {
+  padding: 2px;
+}
+
+.input {
+  position: absolute;
+  top: 50% ;
+  left: 50% ;
+  margin-left: -90px;
+  margin-top: -10px;
+}
+
+.true {
+  font-weight: bold;
+}
