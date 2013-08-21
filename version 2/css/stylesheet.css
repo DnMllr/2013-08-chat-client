@@ -8,6 +8,8 @@ body {
 }
 
 .users {
+  display: none;
+  position: fixed;
   float: right;
   height: 200px;
   width: 70px;
@@ -25,7 +27,7 @@ ul {
 
 .input {
   position: absolute;
-  top: 50% ;
+  top: 66% ;
   left: 50% ;
   margin-left: -90px;
   margin-top: -10px;
@@ -33,4 +35,13 @@ ul {
 
 .true {
   font-weight: bold;
+}
+
+.messages {
+  position: fixed;
+  float: left;
+  height: 100%;
+  overflow: scroll;
+  opacity: 0.3;
+  font-size: 24px;
 }
